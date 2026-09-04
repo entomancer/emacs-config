@@ -45,5 +45,31 @@
   ;; visual line, rather than letting paragraphs run off to the right.
   :hook (markdown-ts-mode . visual-line-mode))
 
+;; ---------------------------------------------------------------------------
+;; valign: visually align table columns
+;; ---------------------------------------------------------------------------
+;; markdown-ts-mode can align tables, but it does so by rewriting the buffer --
+;; padding cells with spaces (`M-x markdown-ts-table-align-table', and
+;; automatically during cell navigation, see `markdown-ts-table-auto-align').
+;; valign instead aligns them visually, using pixel-width `display' properties,
+;; so the file on disk is never touched and no diff appears.  It also copes
+;; with proportional fonts and wide characters, which space padding cannot.
+;;
+;; Both approaches coexist fine; this just means tables look right without
+;; having to reformat them.
+(defun my/valign-if-graphical ()
+  "Enable `valign-mode', but only on a graphical display.
+valign aligns using pixel widths, so it is inert in a terminal -- and
+would otherwise print \='no effect in non-graphical display\=' into the
+echo area for every Markdown buffer opened under `emacs -nw'."
+  (when (display-graphic-p)
+    (valign-mode 1)))
+
+(use-package valign
+  :hook (markdown-ts-mode . my/valign-if-graphical)
+  :custom
+  ;; Draw the column separator as a full-height line rather than a bare "|".
+  (valign-fancy-bar t))
+
 (provide 'markdown)
 ;;; markdown.el ends here

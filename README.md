@@ -92,6 +92,7 @@ both.
 | **smartparens** | Structural editing — see below. Strict in lisp, relaxed elsewhere |
 | **rainbow-delimiters** | Colour-codes nesting depth in Clojure buffers |
 | **tagedit** | Edit HTML tags as if they were expressions |
+| **valign** | Visually aligns Markdown table columns without touching the file |
 
 ### Clojure
 
@@ -281,6 +282,27 @@ tree-sitter font-locking, heading folding, inline images and table editing, and
 For reading rather than editing, **`M-x markdown-ts-view-mode`** is a read-only
 view with markup already hidden and images shown, navigable with plain `n`,
 `p` and `u`.
+
+### Tables
+
+Two mechanisms, and they do different things:
+
+- **valign** aligns table columns *visually*, using pixel-width display
+  properties. The file on disk is never modified, so ragged Markdown source
+  still displays as a neat table and no diff appears. It also handles
+  proportional fonts and wide characters, which space padding cannot. Enabled
+  automatically — but **only on a graphical display**; valign is inert under
+  `emacs -nw`, so the hook checks `display-graphic-p` first to avoid a message
+  on every buffer.
+- **`M-x markdown-ts-table-align-table`** aligns by *rewriting the buffer*,
+  padding cells with spaces. Use it when you want the source itself aligned —
+  for a file others will read as plain text. It also runs automatically while
+  navigating cells (`markdown-ts-table-auto-align`). Note it produces `|Key |`
+  rather than `| Key |`.
+
+Table editing commands live on `C-c` bindings in `markdown-ts-mode-map`:
+insert, clone, delete and move rows and columns, transpose, and export to
+CSV/TSV (`markdown-ts-table-export-table-csv`).
 
 Emacs itself calls this mode experimental — "a number of unresolved issues,
 therefore Emacs does not yet enable it by default" — which is why it does not
