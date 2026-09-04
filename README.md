@@ -98,7 +98,7 @@ both.
 |---------|--------------|
 | **clojure-ts-mode** | The major mode, using Emacs' built-in tree-sitter parser |
 | **clojure-mode** | The older regexp-based mode. Kept as a CIDER dependency and as the fallback when no grammar is available |
-| **clojure-mode-extra-font-locking** | Extra highlighting for `clojure.core` |
+| **clojure-mode-extra-font-locking** | Extra `clojure.core` highlighting. Applies to `clojure-mode` only — `clojure-ts-mode` font-locks via tree-sitter, so this affects the fallback path alone |
 | **cider** | REPL integration: eval, debug, test |
 | **eglot** (built in) | LSP client, talks to `clojure-lsp` |
 
@@ -110,7 +110,7 @@ both.
 | **exec-path-from-shell** | macOS only; installs only on macOS |
 
 Emacs built-ins configured here: `project` (`C-x p`), `savehist`, `saveplace`,
-`ibuffer`, `hippie-exp`, `flymake` (via eglot), `eldoc`.
+`recentf`, `ibuffer`, `hippie-exp`, `flymake` (via eglot), `eldoc`.
 
 ---
 
@@ -312,3 +312,14 @@ To change where something lives, edit the `load` list at the bottom of
 which `completion.el` builds on.
 
 Drop hand-downloaded `.el` files into `vendor/` to put them on the load path.
+
+## Version control
+
+This directory is a git repository. Generated state — `elpa/`, `eln-cache/`,
+`tree-sitter/`, `backups/` and the various state files — is ignored, because
+packages reinstall themselves from the `use-package` declarations and grammars
+rebuild on first use. So a clone plus one launch reproduces the whole setup.
+
+`M-x package-autoremove` is safe to run: `customizations/custom.el` tracks the
+packages this config declares, and everything else in `elpa/` is a dependency
+of one of them.
