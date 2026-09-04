@@ -60,6 +60,7 @@ and `custom-file`. Everything else lives in `customizations/`:
 | `elisp-editing.el` | eldoc for lisp modes |
 | `setup-clojure.el` | clojure-mode, CIDER, eglot/clojure-lsp |
 | `setup-js.el` | JavaScript, HTML, tagedit |
+| `markdown.el` | `markdown-ts-mode` |
 | `custom.el` | Written by `M-x customize` — do not hand-edit |
 
 Every package is declared in exactly one `use-package` block. There is no
@@ -110,7 +111,8 @@ both.
 | **exec-path-from-shell** | macOS only; installs only on macOS |
 
 Emacs built-ins configured here: `project` (`C-x p`), `savehist`, `saveplace`,
-`recentf`, `ibuffer`, `hippie-exp`, `flymake` (via eglot), `eldoc`.
+`recentf`, `ibuffer`, `hippie-exp`, `flymake` (via eglot), `eldoc`,
+`markdown-ts-mode`.
 
 ---
 
@@ -258,6 +260,36 @@ are cached in `.lsp/.cache` inside the project — **add that to the project's
 
 ---
 
+## Markdown
+
+`.md` files open in `markdown-ts-mode`, which ships with Emacs 31. It gives
+tree-sitter font-locking, heading folding, inline images and table editing, and
+`visual-line-mode` is enabled so prose wraps at the window edge.
+
+| Key | Action |
+|-----|--------|
+| `TAB` | Fold / unfold the section at point |
+| `C-c C-x C-m` | Toggle markup hiding — hides the `**`, `_`, `#` clutter |
+| `C-c C-x C-v` | Toggle inline images |
+| `C-c C-c` | Toggle a `- [ ]` checkbox |
+| `C-c C-n` / `C-c C-p` | Next / previous heading |
+| `C-c C-u` | Up to the parent heading |
+| `M-<up>` / `M-<down>` | Move the whole subtree |
+| `M-<left>` / `M-<right>` | Promote / demote a heading |
+| `M-g i` | Jump to any heading (imenu) |
+
+For reading rather than editing, **`M-x markdown-ts-view-mode`** is a read-only
+view with markup already hidden and images shown, navigable with plain `n`,
+`p` and `u`.
+
+Emacs itself calls this mode experimental — "a number of unresolved issues,
+therefore Emacs does not yet enable it by default" — which is why it does not
+claim `.md` on its own and this config does it explicitly. If it gives you
+trouble, the mature third-party alternative is a one-line swap documented at the
+top of `customizations/markdown.el`.
+
+---
+
 ## Things worth knowing
 
 **`C-s` is not isearch.** It runs `consult-line`, which searches the whole
@@ -272,6 +304,22 @@ installs, add to `init.el`:
 ```elisp
 (setq native-comp-async-report-warnings-errors 'silent)
 ```
+
+**Tree-sitter grammars never install themselves.** `treesit-auto-install-grammar`
+is set to `never`. This matters because `markdown-ts-mode` highlights fenced code
+blocks using each language's own tree-sitter mode: with the default `ask`,
+opening a `.md` file containing a ` ```bash ` fence prompts to install the bash
+grammar — and in a daemon or batch session that blocks forever waiting for an
+answer. With `never`, a code block whose grammar is missing just falls back to
+ordinary font-lock. Install grammars deliberately instead:
+
+```
+M-x treesit-install-language-grammar
+M-x markdown-ts-mode-install-parsers    ; markdown + markdown-inline
+M-x clojure-ts-reinstall-grammars       ; clojure and friends
+```
+
+Currently installed: `clojure`, `markdown`, `markdown-inline`, `regex`, `bash`.
 
 **`:if` does not prevent `:ensure`.** If you add a platform-specific package,
 guard the whole `use-package` form with `when`, not `:if` — `:ensure` runs

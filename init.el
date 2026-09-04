@@ -69,6 +69,7 @@
 (load "elisp-editing.el")       ; eldoc for lisp modes
 (load "setup-clojure.el")       ; clojure-mode + CIDER + eglot/clojure-lsp
 (load "setup-js.el")            ; js, html, tagedit
+(load "markdown.el")            ; markdown-ts-mode
 
 ;; ---------------------------------------------------------------------------
 ;; Custom
