@@ -291,9 +291,12 @@ Two mechanisms, and they do different things:
   properties. The file on disk is never modified, so ragged Markdown source
   still displays as a neat table and no diff appears. It also handles
   proportional fonts and wide characters, which space padding cannot. Enabled
-  automatically — but **only on a graphical display**; valign is inert under
-  `emacs -nw`, so the hook checks `display-graphic-p` first to avoid a message
-  on every buffer.
+  automatically in both `markdown-ts-mode` and `markdown-ts-view-mode` — but
+  **only on a graphical display**; valign is inert under `emacs -nw`, so the
+  hook checks `display-graphic-p` first to avoid a message on every buffer.
+  View mode particularly needs it: that mode sets
+  `markdown-ts-enable-table-mode` to nil, so valign is the only thing aligning
+  tables while you read.
 - **`M-x markdown-ts-table-align-table`** aligns by *rewriting the buffer*,
   padding cells with spaces. Use it when you want the source itself aligned —
   for a file others will read as plain text. It also runs automatically while

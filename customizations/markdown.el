@@ -43,7 +43,14 @@
          ("\\.markdown\\'" . markdown-ts-mode))
   ;; Markdown is prose: wrap long lines at the window edge and navigate by
   ;; visual line, rather than letting paragraphs run off to the right.
-  :hook (markdown-ts-mode . visual-line-mode))
+  ;;
+  ;; `markdown-ts-view-mode' must be listed separately.  It is defined with
+  ;; `define-derived-mode ... nil' -- an explicitly blank parent -- so it runs
+  ;; only `markdown-ts-view-mode-hook'; `markdown-ts-mode-hook' never fires
+  ;; there.  The package calls `derived-mode-add-parents' for it, but as with
+  ;; clojure-ts-mode that fixes `derived-mode-p' only, not hook execution.
+  :hook ((markdown-ts-mode      . visual-line-mode)
+         (markdown-ts-view-mode . visual-line-mode)))
 
 ;; ---------------------------------------------------------------------------
 ;; valign: visually align table columns
@@ -66,7 +73,13 @@ echo area for every Markdown buffer opened under `emacs -nw'."
     (valign-mode 1)))
 
 (use-package valign
-  :hook (markdown-ts-mode . my/valign-if-graphical)
+  ;; Both modes, for the reason given above -- and view mode matters most here:
+  ;; it sets `markdown-ts-enable-table-mode' to nil, disabling the built-in
+  ;; aligner, so valign is the only thing aligning tables while reading.
+  ;; valign wraps its edits in `with-silent-modifications', so the read-only
+  ;; buffer is not an obstacle.
+  :hook ((markdown-ts-mode      . my/valign-if-graphical)
+         (markdown-ts-view-mode . my/valign-if-graphical))
   :custom
   ;; Draw the column separator as a full-height line rather than a bare "|".
   (valign-fancy-bar t))
