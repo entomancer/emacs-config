@@ -1,0 +1,22 @@
+# Installed packages — reinstalled automatically from the use-package
+# declarations in customizations/, so there is no need to track them.
+/elpa/
+/eln-cache/
+/tree-sitter/
+
+# Generated state
+/auto-save-list/
+/backups/
+/transient/
+/recentf
+/.recentf
+/history
+/places
+/tramp
+/projectile-bookmarks.eld
+
+# Byte-compiled and editor detritus
+*.elc
+*~
+\#*\#
+.\#*
