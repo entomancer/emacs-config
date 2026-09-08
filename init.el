@@ -27,7 +27,31 @@
 
 (package-initialize)
 
-(unless package-archive-contents
+;; MELPA keeps only the newest build of each package, so a cached index goes
+;; stale: it names tarball URLs that have since 404'd, and installing anything
+;; declared after the last refresh fails.  Refreshing only when there is no
+;; cache at all (the usual `unless package-archive-contents') never notices.
+;; Re-fetch once a day instead -- one network round trip per archive, on the
+;; first startup of the day.
+(defvar my/package-archive-max-age (* 24 60 60)
+  "Seconds a cached package index may be used before it is re-fetched.")
+
+(defun my/package-archives-stale-p ()
+  "Return non-nil if any archive in `package-archives' has a missing or old index."
+  (let ((cutoff (- (float-time) my/package-archive-max-age)))
+    (seq-some
+     (lambda (archive)
+       (let ((index (expand-file-name
+                     (format "archives/%s/archive-contents" (car archive))
+                     package-user-dir)))
+         (or (not (file-exists-p index))
+             (< (float-time (file-attribute-modification-time
+                             (file-attributes index)))
+                cutoff))))
+     package-archives)))
+
+(when (or (null package-archive-contents)
+          (my/package-archives-stale-p))
   (package-refresh-contents))
 
 ;; ---------------------------------------------------------------------------
