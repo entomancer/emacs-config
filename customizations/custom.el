@@ -18,8 +18,9 @@
  ;; consults to decide what is no longer wanted.
  '(package-selected-packages
    '(cape cider clojure-mode clojure-mode-extra-font-locking clojure-ts-mode
-          consult corfu magit marginalia orderless rainbow-delimiters
-          smartparens tagedit valign vertico)))
+          consult corfu exec-path-from-shell flymake-ruff jupyter magit
+          marginalia orderless pet rainbow-delimiters ruff-format smartparens
+          tagedit valign vertico zmq)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
