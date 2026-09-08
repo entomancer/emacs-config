@@ -69,6 +69,8 @@
 (load "elisp-editing.el")       ; eldoc for lisp modes
 (load "setup-clojure.el")       ; clojure-mode + CIDER + eglot/clojure-lsp
 (load "setup-js.el")            ; js, html, tagedit
+(load "setup-python.el")        ; python-ts-mode + eglot/pyright + pet + ruff
+(load "setup-jupyter.el")       ; jupyter REPL + org-babel jupyter-python
 (load "markdown.el")            ; markdown-ts-mode
 
 ;; ---------------------------------------------------------------------------
