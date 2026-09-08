@@ -40,7 +40,9 @@
 (use-package emacs
   :ensure nil
   :custom
-  ;; Never insert hard tabs.
+  ;; Never insert hard tabs.  init.el also sets this before the package
+  ;; bootstrap, so that it holds for any custom.el save that happens
+  ;; before this file loads; this declaration is the documented home.
   (indent-tabs-mode nil)
   ;; Keep backups out of the working directory.
   (backup-directory-alist

@@ -9,6 +9,17 @@
 ;;; Code:
 
 ;; ---------------------------------------------------------------------------
+;; Indentation
+;; ---------------------------------------------------------------------------
+;; Set here rather than only in editing.el because package.el writes
+;; custom.el through `indent-pp-sexp', which honours `indent-tabs-mode'.
+;; With the default (t) the continuation lines of `package-selected-packages'
+;; come out tab-indented, so any save made before editing.el has loaded
+;; produces a whitespace-only diff against the spaces already in the file.
+;; editing.el keeps its own declaration as the documented home for this.
+(setq-default indent-tabs-mode nil)
+
+;; ---------------------------------------------------------------------------
 ;; Package archives
 ;; ---------------------------------------------------------------------------
 (require 'package)

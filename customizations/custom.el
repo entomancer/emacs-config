@@ -7,20 +7,20 @@
 
 ;;; Code:
 
+;; The packages installed by `use-package ... :ensure'.  package.el keeps this
+;; up to date as packages are installed; it is what `M-x package-autoremove'
+;; consults to decide what is no longer wanted.
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-
- ;; The packages installed by `use-package ... :ensure'.  package.el keeps this
- ;; up to date as packages are installed; it is what `M-x package-autoremove'
- ;; consults to decide what is no longer wanted.
  '(package-selected-packages
-   '(cape cider clojure-mode clojure-mode-extra-font-locking clojure-ts-mode
-          consult corfu exec-path-from-shell flymake-ruff jupyter magit
-          marginalia orderless pet rainbow-delimiters ruff-format smartparens
-          tagedit valign vertico zmq)))
+   '(cape cider clojure-mode clojure-mode-extra-font-locking
+          clojure-ts-mode consult corfu exec-path-from-shell
+          flymake-ruff jupyter magit marginalia orderless pet
+          rainbow-delimiters ruff-format smartparens tagedit valign
+          vertico zmq)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
