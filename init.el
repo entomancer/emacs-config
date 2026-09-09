@@ -4,7 +4,7 @@
 ;; Bootstrap only: package archives, use-package, and the load order for the
 ;; files in customizations/.  Every package is declared in exactly one
 ;; `use-package' block inside one of those files -- there is no separate
-;; package list to keep in sync.  See MODERNIZATION.md.
+;; package list to keep in sync.
 
 ;;; Code:
 
