@@ -51,14 +51,24 @@
 ;; ---------------------------------------------------------------------------
 ;; Theme
 ;; ---------------------------------------------------------------------------
-;; Themes live in ~/.emacs.d/themes rather than coming from a package.
+;; The hand-vendored themes in ~/.emacs.d/themes are no longer the active
+;; theme, but stay on the load path as a fallback: M-x load-theme
+;; tomorrow-night-bright.
 (use-package custom
   :ensure nil
   :config
   (let ((theme-dir (expand-file-name "themes" user-emacs-directory)))
     (add-to-list 'custom-theme-load-path theme-dir)
-    (add-to-list 'load-path theme-dir))
-  (load-theme 'tomorrow-night-bright t))
+    (add-to-list 'load-path theme-dir)))
+
+;; Catppuccin ships one theme whose palette is chosen by `catppuccin-flavor':
+;; latte (light), frappe, macchiato, mocha (darkest).  Set it before loading,
+;; which `:custom' guarantees -- it runs ahead of `:config'.
+(use-package catppuccin-theme
+  :custom
+  (catppuccin-flavor 'mocha)
+  :config
+  (load-theme 'catppuccin t))
 
 (provide 'ui)
 ;;; ui.el ends here
