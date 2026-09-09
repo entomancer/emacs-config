@@ -80,6 +80,36 @@
 ;; autoloads that make it work.  Setting it globally makes global modes
 ;; silently fail to activate unless every block remembers :demand.
 
+;; `package-selected-packages' exists only so `package-autoremove' knows what
+;; is unwanted -- installation itself is already handled by :ensure above.  So
+;; derive it from the declarations rather than storing it: package.el's own
+;; bookkeeping cannot work here, because custom.el is loaded last and resets
+;; the variable before the save that package-install defers to
+;; `after-init-hook' ever runs, so anything installed during startup is
+;; dropped.  Recording each declaration as it is ensured gives a list that
+;; depends only on the config, and that stays correct on a machine where some
+;; declarations do not apply (exec-path-from-shell is macOS-only).
+(defvar my/declared-packages nil
+  "Packages named by an `:ensure' declaration during this startup.")
+
+(defun my/ensure-and-record (name args state)
+  "Record the packages NAME's :ensure ARGS names, then install as usual.
+Mirrors the package-name derivation in `use-package-ensure-elpa', which
+this then calls with NAME, ARGS and STATE unchanged."
+  (dolist (ensure args)
+    (let ((package (or (and (eq ensure t) (use-package-as-symbol name))
+                       ensure)))
+      (when package
+        ;; `:ensure (pkg :pin archive)' normalizes to a (pkg . archive) cons.
+        (when (consp package) (setq package (car package)))
+        (unless (memq package my/declared-packages)
+          (push package my/declared-packages)))))
+  (use-package-ensure-elpa name args state))
+
+;; `use-package-handler/:ensure' bakes this value into each expansion, so it
+;; has to be set before anything in customizations/ is loaded.
+(setopt use-package-ensure-function #'my/ensure-and-record)
+
 ;; ---------------------------------------------------------------------------
 ;; Load path
 ;; ---------------------------------------------------------------------------
@@ -111,12 +141,17 @@
 ;; ---------------------------------------------------------------------------
 ;; Custom
 ;; ---------------------------------------------------------------------------
-;; Give Custom its own file so that anything written by `M-x customize' (or by
-;; package.el updating `package-selected-packages') never collides with the
-;; hand-written configuration above.  Loaded last so Custom's values win.
+;; Give Custom its own file so that anything written by `M-x customize' never
+;; collides with the hand-written configuration above.  Loaded last so Custom's
+;; values win.  The file is untracked (see .gitignore): it holds derived,
+;; machine-local state, the same way elpa/ does.
 (setopt custom-file
         (expand-file-name "customizations/custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file))
+
+;; After custom.el, so the derived list wins over any stale stored value.
+(setq package-selected-packages
+      (sort (copy-sequence my/declared-packages) #'string<))
 
 ;;; init.el ends here

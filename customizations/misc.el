@@ -25,7 +25,10 @@
   ;;   M-x treesit-install-language-grammar
   ;;   M-x markdown-ts-mode-install-parsers   (markdown + markdown-inline)
   ;;   M-x clojure-ts-reinstall-grammars      (clojure and friends)
-  (treesit-auto-install-grammar 'never))
+  (treesit-auto-install-grammar 'never)
+  ;; Native-compilation warnings come from third-party package code, where
+  ;; there is nothing for us to fix; the popped-up warning buffer is noise.
+  (warning-suppress-types '((native-compiler))))
 
 ;; Shell script indentation.  (`sh-indentation' is an obsolete alias for
 ;; `sh-basic-offset' and has been dropped.)

@@ -4,6 +4,13 @@
 /eln-cache/
 /tree-sitter/
 
+# Custom's storage.  Machine-local derived state: `M-x customize' settings
+# belong in customizations/*.el instead, and `package-selected-packages' is
+# recomputed from the use-package declarations on every startup (see init.el).
+# Tracking it would carry one machine's package list to the others, where a
+# different set of declarations applies.
+/customizations/custom.el
+
 # Generated state
 /auto-save-list/
 /backups/
