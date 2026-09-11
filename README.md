@@ -20,6 +20,7 @@ come back for the keybinding tables below.
 | `rg` (ripgrep) | recommended | powers `C-c s` project search |
 | `clojure-lsp` | for Clojure | static analysis and linting — see below |
 | `lein` or the `clj` CLI + a JDK | for Clojure | for the REPL and classpath resolution |
+| a Common Lisp implementation (e.g. `sbcl`) | for Common Lisp | REPL via SLY — see below |
 | `basedpyright` or `pyright` | recommended for Python | LSP completion, hover and navigation — see below |
 | `ruff` | recommended for Python | linting (via flymake) and format-on-save |
 | `autoconf`, `automake`, `libtool`, `pkg-config` | required for Jupyter | build the `zmq` module's dynamic library — see below |
@@ -69,6 +70,16 @@ install -m 755 clojure-lsp ~/.local/bin/clojure-lsp
 
 `~/.local/bin` must be on your `PATH`.
 
+Installing SBCL (Homebrew shown; use your package manager otherwise):
+
+```bash
+brew install sbcl
+```
+
+`setup-common-lisp.el` defaults `inferior-lisp-program` to `sbcl`. CLISP also
+works (`brew install clisp`) — see Working with Common Lisp, below, for how to
+switch.
+
 ## Installing
 
 1. Quit Emacs.
@@ -94,6 +105,7 @@ and `custom-file`. Everything else lives in `customizations/`:
 | `misc.el` | Odds and ends |
 | `elisp-editing.el` | eldoc for lisp modes |
 | `setup-clojure.el` | clojure-mode, CIDER, eglot/clojure-lsp |
+| `setup-common-lisp.el` | lisp-mode, SLY |
 | `setup-js.el` | JavaScript, HTML, tagedit |
 | `setup-python.el` | python-ts-mode, eglot/basedpyright, pet, ruff |
 | `setup-jupyter.el` | jupyter REPL + org-babel `jupyter-python` blocks |
@@ -127,7 +139,7 @@ both.
 | Package | What it does |
 |---------|--------------|
 | **smartparens** | Structural editing — see below. Strict in lisp, relaxed elsewhere |
-| **rainbow-delimiters** | Colour-codes nesting depth in Clojure buffers |
+| **rainbow-delimiters** | Colour-codes nesting depth in Clojure and Common Lisp buffers |
 | **tagedit** | Edit HTML tags as if they were expressions |
 | **valign** | Visually aligns Markdown table columns without touching the file |
 
@@ -140,6 +152,12 @@ both.
 | **clojure-mode-extra-font-locking** | Extra `clojure.core` highlighting. Applies to `clojure-mode` only — `clojure-ts-mode` font-locks via tree-sitter, so this affects the fallback path alone |
 | **cider** | REPL integration: eval, debug, test |
 | **eglot** (built in) | LSP client, talks to `clojure-lsp` |
+
+### Common Lisp
+
+| Package | What it does |
+|---------|--------------|
+| **sly** | REPL integration: eval, compile, debug, inspect — SLIME's actively maintained fork |
 
 ### Python
 
@@ -255,6 +273,18 @@ default of backward-unwrap.
 | `C-c M-o` | Clear the REPL buffer (in the REPL) |
 | `M-.` / `M-,` | Jump to definition / jump back |
 
+### Common Lisp
+
+| Key | Command |
+|-----|---------|
+| `M-x sly` | **Start a REPL**, connecting to `inferior-lisp-program` (`sbcl` by default) |
+| `C-c C-z` | Jump to the REPL buffer (and back) |
+| `C-c C-k` | Compile and load the current buffer |
+| `C-c C-c` | Compile the top-level form at point |
+| `C-c C-d d` | Describe the symbol at point |
+| `C-c C-d h` | Look up the symbol in the HyperSpec |
+| `M-.` / `M-,` | Jump to definition / jump back |
+
 ### LSP (works with no REPL running)
 
 | Command | Purpose |
@@ -355,6 +385,28 @@ shelling out to `lein classpath` and then indexes everything, which can take
 30-60 seconds. It runs in the background, so you can keep working, and results
 are cached in `.lsp/.cache` inside the project — **add that to the project's
 `.gitignore`.**
+
+---
+
+## Working with Common Lisp
+
+Simpler than the Clojure setup: there's no separate static-analysis tool, so
+no arbitration to know about. **SLY** (SLIME's actively maintained fork) is
+the whole story — REPL, eldoc, completion, xref, compiler-note overlays, all
+from the connected Lisp process. `.lisp` and `.asd` files already open in the
+built-in `lisp-mode`; run `M-x sly` to start SBCL and connect.
+
+Before a REPL connects, `eldoc-mode` and `rainbow-delimiters` are already
+active (see What's installed, above) — SLY layers its own eldoc backend on
+top once you connect.
+
+### Switching Lisp implementations
+
+`inferior-lisp-program` defaults to `sbcl` — native-compiled, fastest, and
+what SLY itself is most tested against. `M-x my/sly-use-clisp` switches it to
+CLISP for the next `M-x sly` connection (useful for portability testing: CLISP
+is stricter than SBCL about some things SBCL is lax on); `M-x my/sly-use-sbcl`
+switches back. Both are defined in `setup-common-lisp.el`.
 
 ---
 
