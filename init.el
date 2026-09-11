@@ -133,6 +133,7 @@ this then calls with NAME, ARGS and STATE unchanged."
 (load "misc.el")                ; odds and ends
 (load "elisp-editing.el")       ; eldoc for lisp modes
 (load "setup-clojure.el")       ; clojure-mode + CIDER + eglot/clojure-lsp
+(load "setup-common-lisp.el")   ; lisp-mode + SLY
 (load "setup-js.el")            ; js, html, tagedit
 (load "setup-python.el")        ; python-ts-mode + eglot/pyright + pet + ruff
 (load "setup-jupyter.el")       ; jupyter REPL + org-babel jupyter-python
