@@ -28,17 +28,29 @@
 ;; read-only view with markup hidden and images shown, navigable with plain
 ;; n / p / u.
 ;;
-;; Grammar handling needs no guard here: `markdown-ts-mode--initialize' calls
-;; `treesit-ensure-installed' for the markdown and markdown-inline grammars,
-;; and falls back to text-mode with a warning if they cannot be built.  (This
-;; differs from clojure-ts-mode in setup-clojure.el, which needs an explicit
-;; availability check.)  To install them by hand:
+;; Grammar handling: `markdown-ts-mode--initialize' calls `treesit-ensure-installed'
+;; for the markdown and markdown-inline grammars, but that consults
+;; `treesit-auto-install-grammar', which misc.el sets to `never' -- so left
+;; alone, the first .md file opened would just fall back to text-mode with a
+;; warning.  The :config block below installs those two grammars eagerly at
+;; startup instead, the same way use-package's :ensure installs a missing
+;; package, rather than waiting for that first file.  This is deliberately
+;; narrower than flipping the global `never': that setting exists so a fenced
+;; code block in some *other*, unavailable language never blocks trying to
+;; install that language's grammar too (see misc.el) -- this only ever
+;; touches the two grammars markdown-ts-mode itself requires.
+;;
+;; To install by hand (also covers the optional html/yaml/toml grammars for
+;; fenced code blocks, or to retry after a startup install fails, e.g. no
+;; network at the time):
 ;;   M-x markdown-ts-mode-install-parsers
 
 ;;; Code:
 
 (use-package markdown-ts-mode
   :ensure nil                           ; built into Emacs 31
+  :demand t                             ; see :config -- needs the language-source
+                                         ; entries this file registers at load time
   :mode (("\\.md\\'"       . markdown-ts-mode)
          ("\\.markdown\\'" . markdown-ts-mode))
   ;; Markdown is prose: wrap long lines at the window edge and navigate by
@@ -50,7 +62,11 @@
   ;; there.  The package calls `derived-mode-add-parents' for it, but as with
   ;; clojure-ts-mode that fixes `derived-mode-p' only, not hook execution.
   :hook ((markdown-ts-mode      . visual-line-mode)
-         (markdown-ts-view-mode . visual-line-mode)))
+         (markdown-ts-view-mode . visual-line-mode))
+  :config
+  (dolist (lang '(markdown markdown-inline))
+    (unless (treesit-language-available-p lang)
+      (treesit-install-language-grammar lang))))
 
 ;; ---------------------------------------------------------------------------
 ;; valign: visually align table columns
